@@ -1,5 +1,6 @@
 package com.centime.concatenation.service;
 
+import com.centime.util.exception.CustomRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -29,13 +30,18 @@ public abstract class AbstractRepoService<T, U> {
         return getRepo().save(entities);
     }
 
-    public T getEntityById(Integer id) {
+    public T getEntityById(Integer id, String logId) {
         T entity;
         try {
             entity = getRepo().findOne(id);
+            if (entity == null) {
+                throw new CustomRuntimeException(
+                        "Error while retrieving entity from DB: " + id + " : ", 500, logId);
+
+            }
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error while retrieving entity from DB: " + id + " : " + e.getMessage());
+            throw new CustomRuntimeException(
+                    "Error while retrieving entity from DB: " + id + " : " + e.getMessage(), 500, logId);
         }
         return entity;
     }

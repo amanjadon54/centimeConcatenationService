@@ -1,4 +1,4 @@
-package com.centime.concatenation.model;
+package com.centime.concatenation.model.occupation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

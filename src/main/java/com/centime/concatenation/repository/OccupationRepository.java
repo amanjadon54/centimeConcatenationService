@@ -13,14 +13,14 @@ import java.util.List;
 @Repository
 public interface OccupationRepository extends JpaRepository<OccupationEntity, Integer> {
 
-    public List<OccupationEntity> findAll();
+    List<OccupationEntity> findAll();
 
-    public <S extends OccupationEntity> S save(S s);
+    <S extends OccupationEntity> S save(S s);
 
-    public OccupationEntity findOne(Integer integer);
+    OccupationEntity findOne(Integer integer);
 
-    public OccupationEntity getOne(Integer integer);
+    OccupationEntity getOne(Integer integer);
 
     @Query("select distinct v.parentId from OccupationEntity v")
-    public List<Integer> findDistinctName();
+    List<Integer> findDistinctName();
 }
