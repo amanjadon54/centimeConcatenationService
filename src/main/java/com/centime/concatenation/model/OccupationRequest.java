@@ -1,4 +1,4 @@
-package com.centime.concatenation.model.entity;
+package com.centime.concatenation.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -21,7 +21,6 @@ public interface OccupationRepository extends JpaRepository<OccupationEntity, In
 
     public OccupationEntity getOne(Integer integer);
 
-    @Query("select o.id from OccupationEntity o JOIN OccupationEntity p where o.id = p.parentId")
-    public List<OccupationEntity> findOccupationByFilter();
-
+    @Query("select distinct v.parentId from OccupationEntity v")
+    public List<Integer> findDistinctName();
 }

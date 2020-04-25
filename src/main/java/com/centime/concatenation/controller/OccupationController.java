@@ -1,6 +1,6 @@
 package com.centime.concatenation.controller;
 
-import com.centime.concatenation.model.entity.OccupationBulkRequest;
+import com.centime.concatenation.model.OccupationBulkRequest;
 import com.centime.concatenation.service.OccupationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

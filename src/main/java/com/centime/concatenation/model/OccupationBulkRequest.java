@@ -1,5 +1,6 @@
-package com.centime.concatenation.model.entity;
+package com.centime.concatenation.model;
 
+import com.centime.concatenation.model.entity.OccupationEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
