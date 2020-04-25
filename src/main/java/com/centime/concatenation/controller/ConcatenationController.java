@@ -12,7 +12,7 @@ import java.util.Map;
 public class ConcatenationController {
 
     @PostMapping("/concatenate")
-    public Object hello(@RequestHeader Map<String, String> headers, String logId,
+    public Object concatenate(@RequestHeader Map<String, String> headers, String logId,
                         @Valid @RequestBody NameRequest nameRequest) {
         return new ResponseEntity<String>(nameRequest.getName() + " " + nameRequest.getSirNmae(), HttpStatus.OK);
     }
