@@ -73,14 +73,8 @@ public class OccupationService extends AbstractRepoService<OccupationEntity, Int
             }
 
         }
-
-        Set<Map.Entry<String, SubClassesNameDto>> recordSet = records.entrySet();
-        for (Map.Entry<String, SubClassesNameDto> record : recordSet) {
-            filtredData.add(record.getValue());
-        }
-
+        records.entrySet().stream().forEach(entity -> filtredData.add(entity.getValue()));
         return filtredData;
-
     }
 
     private HashMap<String, SubClassesNameDto> arrangeNestedParent(OccupationEntity current, OccupationEntity parent,
@@ -105,7 +99,6 @@ public class OccupationService extends AbstractRepoService<OccupationEntity, Int
             values.getSubClasses().add(new SubClassesNameDto(current.getName(), null));
             return records;
         }
-
         return arrangeNestedParent(current, recordWithIdentity.get(parent.getParentId()), recordWithIdentity, records);
     }
 
