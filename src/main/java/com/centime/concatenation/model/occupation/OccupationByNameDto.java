@@ -11,6 +11,6 @@ import java.util.List;
 @Getter
 public class OccupationByNameDto {
 
-    private List<OccupationFilterNameDto> filtredData;
+    private List<SubClassesNameDto> filtredData;
 
 }

@@ -2,7 +2,7 @@ package com.centime.concatenation.service;
 
 import com.centime.concatenation.model.occupation.FilterNameDto;
 import com.centime.concatenation.model.occupation.OccupationBulkRequest;
-import com.centime.concatenation.model.occupation.OccupationFilterNameDto;
+import com.centime.concatenation.model.occupation.SubClassesNameDto;
 import com.centime.concatenation.model.entity.OccupationEntity;
 import com.centime.concatenation.repository.OccupationRepository;
 import com.centime.util.exception.CustomRuntimeException;
@@ -52,37 +52,61 @@ public class OccupationService extends AbstractRepoService<OccupationEntity, Int
     }
 
     @Transactional
-    public List<OccupationFilterNameDto> getAllByName(String logId) {
+    public List<SubClassesNameDto> getAllByName(String logId) {
         List<OccupationEntity> occupationEntities = occupationRepository.findAll();
-        HashMap<String, List<FilterNameDto>> records = new HashMap<>();
-        List<OccupationFilterNameDto> filtredData = new LinkedList<>();
-        try {
-            for (OccupationEntity entity : occupationEntities) {
-                for (OccupationEntity innerEntity : occupationEntities) {
-                    if (innerEntity.getParentId() == entity.getId()) {
-                        if (records.containsKey(entity.getName())) {
-                            records.get(entity.getName()).add(new FilterNameDto(innerEntity.getName()));
-                        } else {
-                            LinkedList<FilterNameDto> dto = new LinkedList<>();
-                            dto.add(new FilterNameDto(innerEntity.getName()));
-                            records.put(entity.getName(), dto);
-                        }
-                    }
-                }
+        HashMap<String, SubClassesNameDto> records = new HashMap<>();
+        List<SubClassesNameDto> filtredData = new LinkedList<>();
+        HashMap<Integer, OccupationEntity> recordWithIdentity = new HashMap<>();
+        for (OccupationEntity entity : occupationEntities) {
+            recordWithIdentity.put(entity.getId(), entity);
+        }
 
+        for (OccupationEntity entity : occupationEntities) {
+            if (entity.getParentId() == 0) {
+                records.put(entity.getName(), new SubClassesNameDto(entity.getName(), new LinkedList<>()));
+            } else if (records.containsKey(recordWithIdentity.get(entity.getParentId()))) {
+                SubClassesNameDto values = records.get(recordWithIdentity.get(entity.getParentId()));
+                values.getSubClasses().add(new SubClassesNameDto(entity.getName(), null));
+            } else {
+                records = arrangeNestedParent(entity, recordWithIdentity.get(entity.getParentId()), recordWithIdentity,
+                        records);
             }
 
-            Set<Map.Entry<String, List<FilterNameDto>>> recordSet = records.entrySet();
-            for (Map.Entry<String, List<FilterNameDto>> record : recordSet) {
-                OccupationFilterNameDto occupationFilterNameDto = new OccupationFilterNameDto(record.getValue(), record.getKey());
-                filtredData.add(occupationFilterNameDto);
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage() + " logId:{}", logId);
-            throw new CustomRuntimeException(e.getMessage(), 500, logId);
+        }
+
+        Set<Map.Entry<String, SubClassesNameDto>> recordSet = records.entrySet();
+        for (Map.Entry<String, SubClassesNameDto> record : recordSet) {
+            filtredData.add(record.getValue());
         }
 
         return filtredData;
+
+    }
+
+    private HashMap<String, SubClassesNameDto> arrangeNestedParent(OccupationEntity current, OccupationEntity parent,
+                                                                   HashMap<Integer, OccupationEntity> recordWithIdentity,
+                                                                   HashMap<String, SubClassesNameDto> records) {
+        if (!recordWithIdentity.containsKey(parent.getParentId())) {
+            SubClassesNameDto values = records.get(parent.getName());
+            for (SubClassesNameDto subClassesNameDto : values.getSubClasses()) {
+                if (subClassesNameDto.getName().equals(recordWithIdentity.get(current.getParentId()).getName())) {
+                    if (subClassesNameDto.getSubClasses() == null) {
+                        LinkedList<SubClassesNameDto> subClassesNameDtoLinkedList = new LinkedList<>();
+                        subClassesNameDtoLinkedList.add(new SubClassesNameDto(current.getName(), null));
+                        subClassesNameDto.setSubClasses(subClassesNameDtoLinkedList);
+                        return records;
+                    } else {
+                        subClassesNameDto.getSubClasses().add(new SubClassesNameDto(current.getName(), null));
+                        return records;
+                    }
+                }
+            }
+
+            values.getSubClasses().add(new SubClassesNameDto(current.getName(), null));
+            return records;
+        }
+
+        return arrangeNestedParent(current, recordWithIdentity.get(parent.getParentId()), recordWithIdentity, records);
     }
 
 }
